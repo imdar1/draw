@@ -114,6 +114,8 @@ var DefaultClassAttributes = ClassAttributes{
 	"span-blue-title":       `font-family="Arial,Helvetica,sans-serif"`,
 	"span-red":              `stroke="#d3d3d3" fill="#ff9999" rx="5" ry="5"`,
 	"span-red-title":        `font-family="Arial,Helvetica,sans-serif"`,
+	"span-yellow":           `stroke="#d3d3d3" fill="#fdfd96" rx="5" ry="5"`,
+	"span-yellow-title":     `font-family="Arial,Helvetica,sans-serif"`,
 	"state-title":           `font-family="Arial,Helvetica,sans-serif"`,
 	"state":                 `stroke="#d3d3d3" fill="#ffffff" rx="10" ry="10"`,
 	"component":             `stroke="#d3d3d3" fill="#ffffff"`,

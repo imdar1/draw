@@ -247,3 +247,6 @@ func (t *Task) Red() *Task { t.class = "span-red"; return t }
 
 // Blue sets class of task to span-blue
 func (t *Task) Blue() *Task { t.class = "span-blue"; return t }
+
+// Yellow sets class of task to span-yellow
+func (t *Task) Yellow() *Task { t.class = "span-yellow"; return t }
