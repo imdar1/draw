@@ -27,6 +27,7 @@ func newGanttChart(start time.Time, days int) *GanttChart {
 		padLeft:  16,
 		padTop:   10,
 		colSpace: 4,
+		rowSpace: 0,
 		Mark:     time.Now(),
 	}
 	return d
@@ -40,6 +41,7 @@ type GanttChart struct {
 
 	padLeft, padTop int
 	colSpace        int // between day or week
+	rowSpace        int // between tasks
 
 	// Set a marker at this date.
 	Mark time.Time
@@ -89,6 +91,10 @@ func (a *GanttAdjuster) After(parent *Task, days int) {
 	a.task.to = parent.to.AddDate(0, 0, days)
 }
 
+func (d *GanttChart) SetRowSpace(rowSpace int) {
+	d.rowSpace = rowSpace
+}
+
 func (d *GanttChart) WriteSVG(w io.Writer) error {
 	columns := d.addHeader()
 	bars := make([]*shape.Rect, len(d.tasks))
@@ -101,7 +107,7 @@ func (d *GanttChart) WriteSVG(w io.Writer) error {
 		rect.SetClass(t.class)
 		bars[i] = rect
 		d.drawTask(i, t)
-		y := i*lineHeight + headerHeight
+		y := i*lineHeight + headerHeight + i*d.rowSpace
 		d.Diagram.Place(rect).At(start, y)
 	}
 	// adjust the bars
@@ -159,7 +165,11 @@ func (d *GanttChart) addHeader() []*shape.Label {
 				bg := shape.NewRect("")
 				bg.SetClass("weekend")
 				bg.SetWidth((col.Width() + d.colSpace) * 2)
-				bg.SetHeight(len(d.tasks)*col.Font.LineHeight + d.padTop + d.Diagram.Font.LineHeight + d.colSpace)
+				bg.SetHeight(len(d.tasks)*col.Font.LineHeight +
+					d.padTop +
+					d.Diagram.Font.LineHeight +
+					d.colSpace +
+					len(d.tasks)*d.rowSpace)
 				d.Diagram.Place(bg).RightOf(lastDay, d.colSpace)
 				shape.Move(bg, -d.colSpace/2, d.colSpace)
 			}
@@ -181,7 +191,10 @@ func (d *GanttChart) addHeader() []*shape.Label {
 		}
 		if d.isToday(i) {
 			x, y := col.Position()
-			mark := shape.NewLine(x, y, x+10, y)
+			mark := shape.NewCircle(4)
+			mark.SetX(x + 1)
+			mark.SetY(y - 1)
+			mark.SetClass("fill-red")
 			d.Diagram.Place(mark)
 		}
 		now = now.AddDate(0, 0, 1)
@@ -194,7 +207,7 @@ func (d *GanttChart) drawTask(i int, t *Task) {
 	lineHeight := d.Diagram.Font.LineHeight
 	headerHeight := d.padTop + lineHeight*3
 	x := d.padLeft
-	y := i*lineHeight + headerHeight - lineHeight/3
+	y := i*lineHeight + headerHeight - lineHeight/3 + i*d.rowSpace
 	d.Diagram.Place(label).At(x, y)
 }
 
@@ -250,3 +263,10 @@ func (t *Task) Blue() *Task { t.class = "span-blue"; return t }
 
 // Yellow sets class of task to span-yellow
 func (t *Task) Yellow() *Task { t.class = "span-yellow"; return t }
+
+// Orange sets class of task to span-orange
+func (t *Task) Orange() *Task { t.class = "span-orange"; return t }
+
+func (t *Task) GetClass() string {
+	return t.class
+}

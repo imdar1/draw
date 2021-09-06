@@ -24,6 +24,7 @@ type Diagram struct {
 	draw.Style
 
 	Caption *shape.Label
+	Legends map[string]string
 }
 
 // Place adds the shape to the diagram returning an adjuster for
@@ -131,8 +132,8 @@ func (d *Diagram) WriteSVG(w io.Writer) error {
 	if d.Width() == 0 && d.Height() == 0 {
 		d.AdaptSize()
 	}
+	margin := 10
 	if d.Caption != nil {
-		margin := 30
 		x := (d.Width() - d.Caption.Width()) / 2
 		if x < 0 {
 			x = 0
@@ -140,6 +141,24 @@ func (d *Diagram) WriteSVG(w io.Writer) error {
 		d.Place(d.Caption).At(x, d.Height()+margin)
 		d.AdaptSize()
 		d.SetHeight(d.Height() + d.Caption.Font.Height/2) // Fit protruding letters like 'g'
+	}
+	if len(d.Legends) > 0 {
+		x := 8
+		y := d.Height() + margin
+		for class, caption := range d.Legends {
+			legendSymbol := shape.NewRect("")
+			legendSymbol.SetClass(class)
+			legendSymbol.SetHeight(10)
+			legendSymbol.SetWidth(10)
+			d.Place(legendSymbol).At(x, y)
+
+			legendCaption := shape.NewLabel(caption)
+			d.Place(legendCaption).At(x+16, y-6)
+
+			y += 20
+		}
+		d.AdaptSize()
+		d.SetHeight(d.Height() + d.Caption.Font.Height/2)
 	}
 	return d.SVG.WriteSVG(w)
 }
