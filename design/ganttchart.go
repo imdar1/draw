@@ -255,6 +255,9 @@ type Task struct {
 	class    string
 }
 
+// Green sets class of task to span-green
+func (t *Task) Green() *Task { t.class = "span-green"; return t }
+
 // Red sets class of task to span-red
 func (t *Task) Red() *Task { t.class = "span-red"; return t }
 

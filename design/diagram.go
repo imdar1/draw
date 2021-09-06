@@ -158,7 +158,7 @@ func (d *Diagram) WriteSVG(w io.Writer) error {
 			y += 20
 		}
 		d.AdaptSize()
-		d.SetHeight(d.Height() + d.Caption.Font.Height/2)
+		d.SetHeight(d.Height() + margin)
 	}
 	return d.SVG.WriteSVG(w)
 }
